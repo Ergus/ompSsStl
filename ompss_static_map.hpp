@@ -20,6 +20,7 @@
 #define OMPSS_STATIC_MAP
 
 #include <map>
+#include <utility>
 #include <cstddef>
 #include <cstring>
 
@@ -28,28 +29,27 @@
  *  templates, keeping the log complexity to search and compatible with
  *  ompss without using allocation hacks.
  */
-template<typename I, typename N>
-class ompss_static_map {
+template<typename S>
+class ompss_static_map_base {
 public:
 
-	struct node {
-		I first;
-		N second;
-	};
+	typedef S* iterator;
+	typedef decltype(S::first) I;
+	typedef decltype(S::second) N;
 
-	ompss_static_map(std::size_t max_elements):
+	ompss_static_map_base(std::size_t max_elements):
 		_elements(0),
 		_max_elements(max_elements)
 	{}
 
-	ompss_static_map(const std::map<I, N> &in):
+	ompss_static_map_base(const std::map<I, N> &in):
 		_elements(in.size()),
 		_max_elements(_elements + 10), // This is kind of arbitrary
-		_buffer(new node[_max_elements]())
+		_buffer(new S[_max_elements]())
 	{
 		size_t idx = 0;
 		for (auto &it : in)
-			_buffer[idx++] = {it.first, it.second};
+			_buffer[idx++] = it;
 
 		assert(_elements == idx);
 	}
@@ -68,7 +68,7 @@ public:
 ;
 		std::size_t nelems = _elements - it;
 		if (nelems > 0) // Element in the middle (or first)
-			memmove(&_buffer[it + 1], &_buffer[it], sizeof(node)*(nelems));
+			memmove(&_buffer[it + 1], &_buffer[it], sizeof(S) * nelems);
 
 		_buffer[it] = {k, N()};
 		++_elements;
@@ -79,13 +79,15 @@ public:
 	std::size_t size() { return _elements; }
 	std::size_t max_size() { return _max_elements; }
 
-	node *begin() { return &_buffer[0]; }
-	node *end() { return &_buffer[_elements]; }
+	S *begin() { return _buffer; }
+	S *end() { return &_buffer[_elements]; }
 
-private:
+	S *data() { return _buffer; }
+
+protected:
 	std::size_t _elements;
 	const std::size_t _max_elements;
-	node *_buffer;
+	S *_buffer;
 
 	// This function returns the index position for key k if the key
 	// is not in the array returns -1, but sets index position for
@@ -116,5 +118,19 @@ private:
 		return -1;
 	}
 };
+
+// Set
+
+template <typename I>
+union _single_t {
+	I first, second;
+};
+
+template <typename I>
+using ompss_static_set = ompss_static_map_base<_single_t<I>>;
+
+// Map
+template <typename I, typename N>
+using ompss_static_map = ompss_static_map_base<std::pair<I, N>>;
 
 #endif //OMPSS_STATIC_MAP

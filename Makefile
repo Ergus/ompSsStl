@@ -19,7 +19,7 @@ FILES_OUT := $(FILES_IN:.cpp=.x)
 CXXFLAGS := ${CXXFLAGS}
 CXXFLAGS += -g -ggdb -Wall -Wextra -pedantic
 
-all : $(FILES_IN)
+all : $(FILES_OUT)
 
 test_%.x : test_%.cpp %.hpp
 	$(CXX) $(CXXFLAGS) $< -o $@
