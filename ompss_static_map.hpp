@@ -19,10 +19,11 @@
 #ifndef OMPSS_STATIC_MAP
 #define OMPSS_STATIC_MAP
 
-#include <map>
 #include <utility>
+#include <map>
 #include <cstddef>
 #include <cstring>
+#include <cassert>
 
 /*
  *  This is the simplest implementation for a fix sized map with
@@ -42,12 +43,14 @@ public:
 		_max_elements(max_elements)
 	{}
 
-	ompss_static_map_base(const std::map<I, N> &in):
+	template<typename Container>
+	ompss_static_map_base(const Container &in):
 		_elements(in.size()),
 		_max_elements(_elements + 10), // This is kind of arbitrary
 		_buffer(new S[_max_elements]())
 	{
 		size_t idx = 0;
+
 		for (auto &it : in)
 			_buffer[idx++] = it;
 
@@ -65,10 +68,10 @@ public:
 
 		if (_elements >= _max_elements)
 			throw std::out_of_range("Static map");
-;
+
 		std::size_t nelems = _elements - it;
 		if (nelems > 0) // Element in the middle (or first)
-			memmove(&_buffer[it + 1], &_buffer[it], sizeof(S) * nelems);
+			memmove((void *)&_buffer[it + 1], (void *)&_buffer[it], sizeof(S) * nelems);
 
 		_buffer[it] = {k, N()};
 		++_elements;

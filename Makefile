@@ -22,7 +22,7 @@ CXXFLAGS += -g -ggdb -Wall -Wextra -pedantic
 all : $(FILES_OUT)
 
 test_%.x : test_%.cpp %.hpp
-	$(CXX) $(CXXFLAGS) $< -o $@
+	$(CXX) $(CXXFLAGS) $^ -o $@
 
 .PHONY: clean test
 
