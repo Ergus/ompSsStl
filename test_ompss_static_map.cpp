@@ -32,6 +32,7 @@ int main()
 	for (size_t i = 0; i < sizeof(Iarray) / sizeof(int); ++i)
 		themap[Iarray[i]] = Narray[i];
 
+	// Constructor from a map
 	ompss_static_map<int, int> ompssmap(themap);
 
 	for (size_t i = 0; i < sizeof(Iarray) / sizeof(int); ++i)
@@ -47,13 +48,30 @@ int main()
 		++i;
 	}
 
+	// Insert elements
 	ompssmap[1] = -1;
 	ompssmap[5] = -2;
 	ompssmap[6] = -3;
 	ompssmap[7] = -4;
 	ompssmap[15] = -5;
-	for (auto a : ompssmap)
-		cout << a.first << " " << a.second << endl;
+
+	themap[1] = -1;
+	themap[5] = -2;
+	themap[6] = -3;
+	themap[7] = -4;
+	themap[15] = -5;
+
+	auto a = themap.begin();
+	auto b = ompssmap.begin();
+	for (; a != themap.end() && b != ompssmap.end(); ++a, ++b) {
+		cout << "<" << a->first << ";" << a->second << "> =? "
+		     << "<" << b->first << ";" << b->second << ">" << endl;
+	}
+
+	a = themap.begin();
+	b = ompssmap.begin();
+	for (; a != themap.end() && b != ompssmap.end(); ++a, ++b)
+		assert(*a == *b);
 
 	return 0;
 }

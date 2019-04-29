@@ -16,9 +16,9 @@
  */
 
 #include <iostream>
-#include <map>
+#include <set>
 #include <cassert>
-#include "ompss_static_map.hpp"
+#include "ompss_static_set.hpp"
 
 const static int Narray[] = {4, 5, 1, 9, 20, 8, 51};
 
@@ -26,33 +26,44 @@ using namespace std;
 
 int main()
 {
-	map<int, int> themap;
+	set<int> theset;
 
-	for (size_t i = 0; i < sizeof(Iarray) / sizeof(int); ++i)
-		themap[Iarray[i]] = Narray[i];
+	for (size_t i = 0; i < sizeof(Narray) / sizeof(int); ++i)
+		theset.insert(Narray[i]);
 
-	ompss_static_map<int, int> ompssmap(themap);
+	ompss_static_set<int> ompssset(theset);
 
-	for (size_t i = 0; i < sizeof(Iarray) / sizeof(int); ++i)
-		cout << "["<< Iarray[i] <<"]: "
-		     << themap[Iarray[i]] << " =? "
-		     << ompssmap[Iarray[i]] << endl;
+	auto a = theset.begin();
+	auto b= ompssset.begin();
+	for (; a != theset.end() && b != ompssset.end(); ++a, ++b)
+		cout << *a << " =? " << *b <<endl;
 
-	size_t i = 0;
-	for (auto a : ompssmap) {
-		assert(a.first == Iarray[i]);
-		assert(a.second == Narray[i]);
-		assert(themap[Iarray[i]] == ompssmap[Iarray[i]]);
-		++i;
+	a = theset.begin();
+	b= ompssset.begin();
+	for (; a != theset.end() && b != ompssset.end(); ++a, ++b) {
+		assert(*a == *b);
 	}
 
-	ompssmap[1] = -1;
-	ompssmap[5] = -2;
-	ompssmap[6] = -3;
-	ompssmap[7] = -4;
-	ompssmap[15] = -5;
-	for (auto a : ompssmap)
-		cout << a.first << " " << a.second << endl;
+	ompssset.insert(-1);
+	ompssset.insert(2);
+	ompssset.insert(10);
+	ompssset.insert(52);
+
+	theset.insert(-1);
+	theset.insert(2);
+	theset.insert(10);
+	theset.insert(52);
+
+	a = theset.begin();
+	b= ompssset.begin();
+	for (; a != theset.end() && b != ompssset.end(); ++a, ++b)
+		cout << *a << " =? " << *b <<endl;
+
+	a = theset.begin();
+	b= ompssset.begin();
+	for (; a != theset.end() && b != ompssset.end(); ++a, ++b) {
+		assert(*a == *b);
+	}
 
 	return 0;
 }

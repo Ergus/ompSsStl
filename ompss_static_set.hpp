@@ -16,11 +16,11 @@
  */
 
 
-#ifndef OMPSS_STATIC_MAP
-#define OMPSS_STATIC_MAP
+#ifndef OMPSS_STATIC_SET
+#define OMPSS_STATIC_SET
 
 
-#include <map>
+#include <set>
 #include <algorithm>
 
 #include "ompss_static_buffer.hpp"
@@ -31,36 +31,34 @@
  *  ompss without using allocation hacks.
  */
 template <typename _Key,
-          typename _Tp,
-          typename _Alloc = std::allocator<std::pair<const _Key, _Tp>>>
-class ompss_static_map
+          typename _Alloc = std::allocator<_Key>>
+class ompss_static_set
 {
 public:
 	typedef _Key     key_type;
-	typedef _Tp      mapped_type;
-	typedef std::pair<const _Key, _Tp>  value_type;
+	typedef _Key     value_type;
 	typedef _Alloc   allocator_type;
 
 	// Iterator
 	typedef  value_type *iterator;
 	typedef const value_type *const_iterator;
 
-	ompss_static_map(std::map<key_type, mapped_type> &in) :
+	ompss_static_set(std::set<key_type> &in) :
 		_buffer(in.size() + 10)  // TODO: This 10 is completely arbitrary now.
 	{
 		for (auto const &a :in)
 			_buffer.push_back(a);
 	}
 
-	mapped_type &operator[] (const key_type &k)
+	std::pair<iterator, bool> insert(const key_type &k)
 	{
 		iterator it;
 		const bool _exists = _buffer.find_pos(k, it, begin(), end());
 
 		if (!_exists)
-			_buffer.insert(it, k).second = mapped_type();
+			_buffer.insert(it, k);
 
-		return it->second;
+		return std::make_pair(it, !_exists);
 	}
 
 	iterator begin() { return _buffer.begin(); }
@@ -69,7 +67,7 @@ public:
 	iterator end() { return _buffer.end(); }
 	const_iterator end() const { return &_buffer.end(); }
 
-	mapped_type *data() { return _buffer; }
+	value_type *data() { return _buffer; }
 
 	std::size_t size() const { return _buffer.size(); }
 	std::size_t max_size() const { return _buffer.max_size(); }
@@ -77,8 +75,8 @@ public:
 
 
 private:
-	omp_static_buffer <_Key, std::pair<const _Key, _Tp>, _Alloc> _buffer;
-	
+	omp_static_buffer <_Key, _Key, _Alloc> _buffer;
+
 };
 
-#endif //OMPSS_STATIC_MAP
+#endif //OMPSS_STATIC_SET
