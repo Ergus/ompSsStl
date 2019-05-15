@@ -21,7 +21,7 @@
 
 #include "ompss_static_set.hpp"
 
-const static int Narray[] = {4, 5, 1, 9, 20, 8, 51};
+const static int Narray[] = {4, 5, 1, 9, 12, 8, 15};
 
 using namespace std;
 
@@ -29,44 +29,62 @@ int main()
 {
 	set<int> theset;
 
+	// Fill a set
 	for (size_t i = 0; i < sizeof(Narray) / sizeof(int); ++i)
 		theset.insert(Narray[i]);
 
 	// Constructor from std:;set
 	ompss_static_set<int> ompssset(theset);
 
+	// test the search algorithm
 	auto a = theset.begin();
-	auto b= ompssset.begin();
-	for (; a != theset.end() && b != ompssset.end(); ++a, ++b)
-		cout << *a << " =? " << *b <<endl;
-
-	a = theset.begin();
-	b= ompssset.begin();
+	auto b = ompssset.begin();
 	for (; a != theset.end() && b != ompssset.end(); ++a, ++b) {
+		cout << *a << " =? " << *b <<endl;
 		assert(*a == *b);
 	}
+
+	// Test the size function
+	cout << "Size before: " << ompssset.size() << " =? " << theset.size() << endl;
+	assert(ompssset.size() == theset.size());
+
 
 	// Insert element
 	ompssset.insert(-1);
 	ompssset.insert(2);
 	ompssset.insert(10);
-	ompssset.insert(52);
+	ompssset.insert(18);
 
 	theset.insert(-1);
 	theset.insert(2);
 	theset.insert(10);
-	theset.insert(52);
+	theset.insert(18);
 
 	a = theset.begin();
 	b= ompssset.begin();
-	for (; a != theset.end() && b != ompssset.end(); ++a, ++b)
+	for (; a != theset.end() && b != ompssset.end(); ++a, ++b) {
 		cout << *a << " =? " << *b <<endl;
-
-	a = theset.begin();
-	b= ompssset.begin();
-	for (; a != theset.end() && b != ompssset.end(); ++a, ++b)
 		assert(*a == *b);
+	}
 
+	// Test the size function
+	cout << "Size after: " << ompssset.size() << " =? " << theset.size() << endl;
+	assert(ompssset.size() == theset.size());
+
+	for (int i = 0; i < 20; ++i)
+	{
+		a = theset.lower_bound(i);
+		b = ompssset.lower_bound(i);
+
+		if (a == theset.end()) {
+			cout << i << ": After end? " ;
+			assert(b == ompssset.end());
+			cout << "OK!" << endl;
+		} else {
+			cout << i << " " << *a << " =? " << *b << endl;
+			assert(*a == *b);
+		}
+	}
 
 	return 0;
 }

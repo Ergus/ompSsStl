@@ -32,10 +32,12 @@ using namespace std;
 int main()
 {
 	map<int, int> themap;
+
+	// Fill a map
 	for (size_t i = 0; i < sizeof(Iarray) / sizeof(int); ++i)
 		themap[Iarray[i]] = Narray[i];
 
-	// Constructor from a std::map
+	// Constructor from an std::map
 	ompss_static_map<int, int> ompssmap(themap);
 
 	// Test the search algorithm
@@ -55,7 +57,11 @@ int main()
 		++i;
 	}
 
-	// Insert elements
+	// Test the size function
+	cout << "Size before: " << ompssmap.size() << " =? " << themap.size() << endl;
+	assert(ompssmap.size() == themap.size());
+
+	// Insert elements in different positions
 	ompssmap[1] = -1;
 	ompssmap[6] = -3;
 	ompssmap[5] = -2;
@@ -74,6 +80,10 @@ int main()
 		cout << *a << " =? " << *b << endl;
 		assert(*a == *b);
 	}
+
+	// Test the size function
+	cout << "Size after: " << ompssmap.size() << " =? " << themap.size() << endl;
+	assert(ompssmap.size() == themap.size());
 
 	// lower_bounds test
 	for (int i = 0; i < 20; ++i)

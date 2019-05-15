@@ -70,6 +70,8 @@ public:
 
 	mapped_type *data() { return _buffer; }
 
+	bool empty() const { return (_buffer.size() == 0); }
+
 	std::size_t size() const { return _buffer.size(); }
 	std::size_t max_size() const { return _buffer.max_size(); }
 
