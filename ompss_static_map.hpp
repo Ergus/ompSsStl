@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 #ifndef OMPSS_STATIC_MAP
 #define OMPSS_STATIC_MAP
 
 
 #include <map>
 #include <algorithm>
+#include <sstream>
 
 #include "ompss_static_buffer.hpp"
 
@@ -54,10 +54,9 @@ public:
 
 	mapped_type &operator[] (const key_type &k)
 	{
-		iterator it;
-		const bool _exists = _buffer.find_pos(k, it, begin(), end());
+		iterator it = _buffer.lower_bound(k, begin(), end());
 
-		if (!_exists)
+		if (it->first != k)
 			_buffer.insert(it, k).second = mapped_type();
 
 		return it->second;
@@ -74,11 +73,33 @@ public:
 	std::size_t size() const { return _buffer.size(); }
 	std::size_t max_size() const { return _buffer.max_size(); }
 
+	const_iterator lower_bound(const key_type &k) const
+	{
+		return _buffer.lower_bound(k, _buffer.begin(), _buffer.end());
+	}
 
+	iterator lower_bound(const key_type &k)
+	{
+		return _buffer.lower_bound(k, _buffer.begin(), _buffer.end());
+	}
 
 private:
 	omp_static_buffer <_Key, std::pair<const _Key, _Tp>, _Alloc> _buffer;
-	
 };
+
+template <typename _Key, typename _Tp>
+std::string pairToStr(const std::pair<_Key, _Tp> &in)
+{
+	std::ostringstream ss;
+	ss << "<" << in.first << ";" << in.second << ">";
+	return ss.str();
+}
+
+template <typename _Key, typename _Tp>
+std::ostream& operator<< (std::ostream& os, const std::pair<_Key, _Tp> &in)
+{
+	os << pairToStr(in);
+	return os;
+}
 
 #endif //OMPSS_STATIC_MAP

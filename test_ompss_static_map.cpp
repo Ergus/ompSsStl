@@ -1,3 +1,6 @@
+
+
+
 /*
  * Copyright (C) 2019  Jimmy Aguilar Mena
  *
@@ -18,9 +21,10 @@
 #include <iostream>
 #include <map>
 #include <cassert>
+
 #include "ompss_static_map.hpp"
 
-const static int Iarray[] = {2, 3, 4, 7, 9, 10, 11};
+const static int Iarray[] = {2, 3, 4, 7, 9, 12, 13}; // keep this sorted
 const static int Narray[] = {4, 5, 1, 9, 20, 8, 51};
 
 using namespace std;
@@ -28,18 +32,21 @@ using namespace std;
 int main()
 {
 	map<int, int> themap;
-
 	for (size_t i = 0; i < sizeof(Iarray) / sizeof(int); ++i)
 		themap[Iarray[i]] = Narray[i];
 
-	// Constructor from a map
+	// Constructor from a std::map
 	ompss_static_map<int, int> ompssmap(themap);
 
-	for (size_t i = 0; i < sizeof(Iarray) / sizeof(int); ++i)
+	// Test the search algorithm
+	for (size_t i = 0; i < sizeof(Iarray) / sizeof(int); ++i) {
 		cout << "["<< Iarray[i] <<"]: "
 		     << themap[Iarray[i]] << " =? "
 		     << ompssmap[Iarray[i]] << endl;
+		assert(themap[Iarray[i]] == ompssmap[Iarray[i]]);
+	}
 
+	// Check they are on the same order and the iterator
 	size_t i = 0;
 	for (auto a : ompssmap) {
 		assert(a.first == Iarray[i]);
@@ -50,28 +57,40 @@ int main()
 
 	// Insert elements
 	ompssmap[1] = -1;
-	ompssmap[5] = -2;
 	ompssmap[6] = -3;
-	ompssmap[7] = -4;
+	ompssmap[5] = -2;
+	ompssmap[9] = -4;
 	ompssmap[15] = -5;
 
 	themap[1] = -1;
-	themap[5] = -2;
 	themap[6] = -3;
-	themap[7] = -4;
+	themap[5] = -2;
+	themap[9] = -4;
 	themap[15] = -5;
 
 	auto a = themap.begin();
 	auto b = ompssmap.begin();
 	for (; a != themap.end() && b != ompssmap.end(); ++a, ++b) {
-		cout << "<" << a->first << ";" << a->second << "> =? "
-		     << "<" << b->first << ";" << b->second << ">" << endl;
+		cout << *a << " =? " << *b << endl;
+		assert(*a == *b);
 	}
 
-	a = themap.begin();
-	b = ompssmap.begin();
-	for (; a != themap.end() && b != ompssmap.end(); ++a, ++b)
-		assert(*a == *b);
+	// lower_bounds test
+	for (int i = 0; i < 20; ++i)
+	{
+		a = themap.lower_bound(i);
+		b = ompssmap.lower_bound(i);
+
+		if (a == themap.end()) {
+			cout << i << ": After end? " ;
+			assert(b == ompssmap.end());
+			cout << "OK!" << endl;
+		} else {
+			cout << i << " " << *a << " =? " << *b << endl;
+			assert(*a == *b);
+		}
+	}
+
 
 	return 0;
 }

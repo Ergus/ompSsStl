@@ -52,16 +52,15 @@ public:
 // This function returns the index position for key k if the key
 // is not in the array returns false, but sets index position for
 // the closest higher value to k.
-	bool find_pos(const _Key &k, iterator &it,
-	              const _Val *begin, const _Val *end)
+	iterator lower_bound(const _Key &k, const _Val *begin, const _Val *end)
 	{
 		size_t _min = 0, _max = end - begin;
 
-		it = (_Val*) begin;
+		iterator it = (_Val*) begin;
 		_Key _it_key = KeyOfIterator(it);
 
 		if (k < _it_key)
-			return false;
+			return it;
 
 		while (_min < _max) {
 			const size_t i = (_min + _max) / 2;
@@ -69,7 +68,7 @@ public:
 			_it_key = KeyOfIterator(it);
 
 			if (k == _it_key)
-				return true;
+				return it;
 
 			if (k > _it_key)
 				_min = i + 1;
@@ -80,7 +79,7 @@ public:
 		if (k > _it_key)
 			++it;
 
-		return false;
+		return it;
 	}
 
 	_Val &insert(_Val * const place, _Key keyvalue)

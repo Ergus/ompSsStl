@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 #ifndef OMPSS_STATIC_SET
 #define OMPSS_STATIC_SET
 
@@ -52,13 +51,13 @@ public:
 
 	std::pair<iterator, bool> insert(const key_type &k)
 	{
-		iterator it;
-		const bool _exists = _buffer.find_pos(k, it, begin(), end());
+		iterator it = _buffer.lower_bound(k, _buffer.begin(), _buffer.end());
 
-		if (!_exists)
+		const bool existed = (*it == k);
+		if (!existed)
 			_buffer.insert(it, k);
 
-		return std::make_pair(it, !_exists);
+		return std::make_pair(it, existed);
 	}
 
 	iterator begin() { return _buffer.begin(); }
@@ -72,7 +71,10 @@ public:
 	std::size_t size() const { return _buffer.size(); }
 	std::size_t max_size() const { return _buffer.max_size(); }
 
-
+	iterator lower_bound(const key_type &k)
+	{
+		return _buffer.lower_bound(k, _buffer.begin(), _buffer.end());
+	}
 
 private:
 	omp_static_buffer <_Key, _Key, _Alloc> _buffer;

@@ -18,6 +18,7 @@
 #include <iostream>
 #include <set>
 #include <cassert>
+
 #include "ompss_static_set.hpp"
 
 const static int Narray[] = {4, 5, 1, 9, 20, 8, 51};
@@ -31,6 +32,7 @@ int main()
 	for (size_t i = 0; i < sizeof(Narray) / sizeof(int); ++i)
 		theset.insert(Narray[i]);
 
+	// Constructor from std:;set
 	ompss_static_set<int> ompssset(theset);
 
 	auto a = theset.begin();
@@ -44,6 +46,7 @@ int main()
 		assert(*a == *b);
 	}
 
+	// Insert element
 	ompssset.insert(-1);
 	ompssset.insert(2);
 	ompssset.insert(10);
@@ -61,9 +64,9 @@ int main()
 
 	a = theset.begin();
 	b= ompssset.begin();
-	for (; a != theset.end() && b != ompssset.end(); ++a, ++b) {
+	for (; a != theset.end() && b != ompssset.end(); ++a, ++b)
 		assert(*a == *b);
-	}
+
 
 	return 0;
 }
