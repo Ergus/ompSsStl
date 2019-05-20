@@ -51,6 +51,7 @@ int main()
 	// Check they are on the same order and the iterator
 	size_t i = 0;
 	for (auto a : ompssmap) {
+		cout << a << "=? <" << Iarray[i] <<","<< Narray[i] << ">" << endl;
 		assert(a.first == Iarray[i]);
 		assert(a.second == Narray[i]);
 		assert(themap[Iarray[i]] == ompssmap[Iarray[i]]);

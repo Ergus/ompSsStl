@@ -91,7 +91,8 @@ public:
 
 		std::size_t nelems = end() - place;
 		if (nelems > 0) // Element in the middle (or first)
-			memmove((void*) (place + 1), (void *) place, sizeof(_Val) * nelems);
+			memmove((void*) (place + 1), (void *) place,
+			        sizeof(_Val) * nelems);
 
 		++_elements;
 		KeyOfIterator(place) = keyvalue;
@@ -108,13 +109,37 @@ public:
 		++_elements;
 	}
 
+	void allocate(std::size_t max_elements)
+	{
+		assert(_buffer == nullptr);
+		_max_elements = max_elements;
+		_buffer = _alloc.allocate(max_elements);
+	}
+
+	void deallocate()
+	{
+		assert(_buffer != nullptr);
+		_alloc.deallocate(_buffer, _max_elements);
+		_elements = 0;
+		_max_elements = 0;
+	}
+
+	void clear()
+	{
+		_elements = 0;
+	}
+
 	omp_static_buffer(std::size_t max_elements,
 	                  const _Alloc &__a = _Alloc()):
-		_elements(0),
-		_max_elements(max_elements),
-		_alloc(__a),
-		_buffer(_alloc.allocate(max_elements))
-	{}
+		_elements(0), _alloc(__a), _buffer(nullptr)
+	{
+		allocate(max_elements);
+	}
+
+	~omp_static_buffer()
+	{
+		deallocate();
+	}
 
 	_Val *begin() const { return &_buffer[0]; }
 	_Val *begin() { return &_buffer[0]; }
@@ -129,7 +154,7 @@ public:
 
 protected:
 	std::size_t _elements;
-	const std::size_t _max_elements;
+	std::size_t _max_elements;
 	_Tp_alloc_type _alloc;
 	_Val *_buffer;
 };

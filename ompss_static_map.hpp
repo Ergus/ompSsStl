@@ -45,11 +45,28 @@ public:
 	typedef  value_type *iterator;
 	typedef const value_type *const_iterator;
 
-	ompss_static_map(std::map<key_type, mapped_type> &in) :
+	ompss_static_map(const std::map<key_type, mapped_type> &in) :
 		_buffer(in.size() + 10)  // TODO: This 10 is completely arbitrary now.
 	{
 		for (auto const &a :in)
 			_buffer.push_back(a);
+	}
+
+	ompss_static_map &operator=(const std::map<key_type, mapped_type> &in)
+	{
+		const std::size_t in_size = in.size();
+
+		if (_buffer.max_size() < in.size()) {
+			_buffer.deallocate();
+			_buffer.allocate(in_size);
+		} else {
+			_buffer.clear();
+		}
+
+		for (auto const &a :in)
+			_buffer.push_back(a);
+
+		return *this;
 	}
 
 	mapped_type &operator[] (const key_type &k)
@@ -71,6 +88,8 @@ public:
 	mapped_type *data() { return _buffer; }
 
 	bool empty() const { return (_buffer.size() == 0); }
+
+	void clear() { _buffer.clear(); }
 
 	std::size_t size() const { return _buffer.size(); }
 	std::size_t max_size() const { return _buffer.max_size(); }
