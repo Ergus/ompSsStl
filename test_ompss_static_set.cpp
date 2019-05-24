@@ -48,17 +48,15 @@ int main()
 	cout << "Size before: " << ompssset.size() << " =? " << theset.size() << endl;
 	assert(ompssset.size() == theset.size());
 
+	const int tmp_array[] = {-1, 2, 10, 18, 4, 5};
 
-	// Insert element
-	ompssset.insert(-1);
-	ompssset.insert(2);
-	ompssset.insert(10);
-	ompssset.insert(18);
-
-	theset.insert(-1);
-	theset.insert(2);
-	theset.insert(10);
-	theset.insert(18);
+	cout << "Test insert" << endl;
+	for (auto &i : tmp_array) {
+		const auto osstmp = ompssset.insert(i);
+		const auto settmp = theset.insert(i);
+		cout << "inserting " << i << " :\t" << osstmp.second << " ?= " << settmp.second << endl;
+		assert(osstmp.second == osstmp.second);
+	}
 
 	a = theset.begin();
 	b= ompssset.begin();
