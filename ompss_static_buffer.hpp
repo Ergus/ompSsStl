@@ -37,8 +37,7 @@ public:
 	rebind<_Val>::other _Tp_alloc_type;
 
 
-	// The key must be always the first element and of type
-	// _Key
+	// The key must be always the first element and of type _Key
 	_Key KeyOfIterator(const _Val *it) const
 	{
 		return _Key()(*it);
@@ -87,7 +86,7 @@ public:
 		assert(KeyOfIterator(place) != keyvalue);
 
 		if (_elements >= _max_elements)
-			throw std::out_of_range("Static map");
+			throw std::out_of_range("Static buffer");
 
 		std::size_t nelems = end() - place;
 		if (nelems > 0) // Element in the middle (or first)
@@ -141,6 +140,8 @@ public:
 	template<typename Tarray>
 	void copy(const Tarray &in)
 	{
+		assert(_buffer == nullptr && _elements == 0 && _max_elements == 0);
+
 		const std::size_t in_size = in.size();
 
 		if (max_size() < in.size()) {

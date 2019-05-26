@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-FILES_IN := test_ompss_static_map.cpp test_ompss_static_set.cpp
+FILES_IN := test_ompss_static_map.cpp test_ompss_static_set.cpp test_ompss_static_vector.cpp
 FILES_OUT := $(FILES_IN:.cpp=.x)
 
 HEADERS_HPP := $(wildcard *.hpp)
