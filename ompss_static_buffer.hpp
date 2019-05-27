@@ -101,18 +101,11 @@ public:
 	void push_back(const _Val &in)
 	{
 		if (_elements >= _max_elements)
-			throw std::out_of_range("Static map");
+			throw std::out_of_range("Static buffer");
 
 		_Val * const ptr = end();
 		memcpy((void*) ptr, (void*) &in, sizeof(_Val));
 		++_elements;
-	}
-
-	void allocate(std::size_t max_elements)
-	{
-		assert(_buffer == nullptr && _elements == 0 && _max_elements == 0);
-		_buffer = _alloc.allocate(max_elements);
-		_max_elements = max_elements;
 	}
 
 	void clear()
@@ -120,12 +113,22 @@ public:
 		_elements = 0;
 	}
 
+	void reserve(std::size_t n)
+	{
+		// Reallocation is not supported. So only empty buffers can be reserved
+		assert(_buffer == nullptr && _elements == 0 && _max_elements == 0);
+
+		_buffer = _alloc.allocate(n);
+		_max_elements = n;
+	}
+
 	template<typename Tarray>
 	void copy(const Tarray &in)
 	{
-		assert(_buffer == nullptr && _elements == 0 && _max_elements == 0);
-
-		allocate(in.size() + 10); // TODO: This 10 is just arbitrary
+		if (_buffer == nullptr)
+			reserve(in.size() + 10); // TODO: This 10 is arbitrary
+		else if (in.size() > _max_elements)
+			throw std::out_of_range("Static buffer");
 
 		for (auto const &a :in)
 			push_back(a);

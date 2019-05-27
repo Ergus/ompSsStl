@@ -75,6 +75,8 @@ public:
 
 	void clear() { _buffer.clear(); }
 
+	void reserve(std::size_t new_cap) { _buffer.reserve(new_cap); }
+
 	std::size_t size() const { return _buffer.size(); }
 	std::size_t max_size() const { return _buffer.max_size(); }
 
