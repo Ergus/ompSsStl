@@ -26,13 +26,9 @@
 template<typename _Tp>
 class ompss_allocator {
 public:
-	typedef size_t     size_type;
-	typedef ptrdiff_t  difference_type;
-	typedef _Tp*       pointer;
-	typedef const _Tp* const_pointer;
-	typedef _Tp&       reference;
-	typedef const _Tp& const_reference;
-	typedef _Tp        value_type;
+	typedef std::ptrdiff_t   difference_type;
+	typedef std::size_t      size_type;
+	typedef _Tp              value_type;
 
 	ompss_allocator() = default;
 

@@ -29,20 +29,21 @@
  *  templates, keeping the log complexity to search and compatible with
  *  ompss without using allocation hacks.
  */
-template <typename _Key,
-          typename _Alloc = std::allocator<_Key>>
+template <typename _Tp,
+          typename _Alloc = std::allocator<_Tp>>
 class ompss_static_vector
 {
 public:
-	typedef _Key     value_type;
+	typedef _Tp     value_type;
 	typedef _Alloc   allocator_type;
 
 	// Iterator
 	typedef  value_type *iterator;
 	typedef const value_type *const_iterator;
 
-	ompss_static_vector(std::vector<value_type> &in) :
-		_buffer(in)  // TODO: This 10 is completely arbitrary now.
+	ompss_static_vector(std::vector<value_type> &in,
+	                    const allocator_type& __a = allocator_type()) :
+		_buffer(in, __a)
 	{}
 
 	// The = operator may be used only with empty containers.
@@ -78,7 +79,7 @@ public:
 	std::size_t max_size() const { return _buffer.max_size(); }
 
 private:
-	omp_static_buffer <_Key, _Key, _Alloc> _buffer;
+	omp_static_buffer <_Tp, _Tp, _Alloc> _buffer;
 
 };
 

@@ -115,18 +115,27 @@ public:
 		_max_elements = max_elements;
 	}
 
-	void deallocate()
-	{
-		assert(_buffer != nullptr);
-		_alloc.deallocate(_buffer, _max_elements);
-		_elements = 0;
-		_max_elements = 0;
-	}
-
 	void clear()
 	{
 		_elements = 0;
 	}
+
+	template<typename Tarray>
+	void copy(const Tarray &in)
+	{
+		assert(_buffer == nullptr && _elements == 0 && _max_elements == 0);
+
+		allocate(in.size() + 10); // TODO: This 10 is just arbitrary
+
+		for (auto const &a :in)
+			push_back(a);
+	}
+
+	// Constructor
+	omp_static_buffer(const _Alloc &__a = _Alloc()):
+		_elements(0), _max_elements(0),
+		_alloc(__a), _buffer(nullptr)
+	{}
 
 	template<typename Tarray>
 	omp_static_buffer(const Tarray &in,
@@ -137,27 +146,14 @@ public:
 		copy(in);
 	}
 
-	template<typename Tarray>
-	void copy(const Tarray &in)
-	{
-		assert(_buffer == nullptr && _elements == 0 && _max_elements == 0);
-
-		const std::size_t in_size = in.size();
-
-		if (max_size() < in.size()) {
-			if (_buffer != nullptr)
-				deallocate();
-			allocate(in_size + 10);
-		} else
-			clear();
-
-		for (auto const &a :in)
-			push_back(a);
-	}
-
+	// Destructor
 	~omp_static_buffer()
 	{
-		deallocate();
+		assert(_buffer != nullptr);
+		_alloc.deallocate(_buffer, _max_elements);
+		_elements = 0;
+		_max_elements = 0;
+
 	}
 
 	_Val *begin() const { return &_buffer[0]; }
