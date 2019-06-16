@@ -42,8 +42,11 @@ public:
 	typedef  value_type *iterator;
 	typedef const value_type *const_iterator;
 
+	ompss_static_set() : _buffer()
+	{}
+
 	ompss_static_set(std::set<key_type> &in) :
-		_buffer(in)  // TODO: This 10 is completely arbitrary now.
+		_buffer(in)
 	{}
 
 	ompss_static_set &operator=(const std::set<key_type> &in)
@@ -52,7 +55,8 @@ public:
 		return *this;
 	}
 
-	std::pair<iterator, bool> insert(const key_type &k)
+	std::pair
+	<iterator, bool> insert(const key_type &k)
 	{
 		iterator it = _buffer.lower_bound(k, _buffer.begin(), _buffer.end());
 
@@ -80,7 +84,18 @@ public:
 	std::size_t size() const { return _buffer.size(); }
 	std::size_t max_size() const { return _buffer.max_size(); }
 
+	// Find
+	iterator find(const key_type &k)
+	{
+		return _buffer.find(k);
+	}
 
+	const_iterator find(const key_type &k) const
+	{
+		return _buffer.find(k);
+	}
+
+	// Lower bound
 	const_iterator lower_bound(const key_type &k) const
 	{
 		return _buffer.lower_bound(k, _buffer.begin(), _buffer.end());

@@ -69,10 +69,29 @@ int main()
 	cout << "Size after: " << ompssset.size() << " =? " << theset.size() << endl;
 	assert(ompssset.size() == theset.size());
 
+	// Test lower bounds
+	cout << "Test lower bounds" << endl;
 	for (int i = 0; i < 20; ++i)
 	{
 		a = theset.lower_bound(i);
 		b = ompssset.lower_bound(i);
+
+		if (a == theset.end()) {
+			cout << i << ": After end? " ;
+			assert(b == ompssset.end());
+			cout << "OK!" << endl;
+		} else {
+			cout << i << " " << *a << " =? " << *b << endl;
+			assert(*a == *b);
+		}
+	}
+
+	// Test find
+	cout << "Test find" << endl;
+	for (int i = 0; i < 20; ++i)
+	{
+		a = theset.find(i);
+		b = ompssset.find(i);
 
 		if (a == theset.end()) {
 			cout << i << ": After end? " ;

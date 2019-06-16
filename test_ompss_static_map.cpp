@@ -87,6 +87,7 @@ int main()
 	assert(ompssmap.size() == themap.size());
 
 	// lower_bounds test
+	cout << "Test lower_bounds" << endl;
 	for (int i = 0; i < 20; ++i)
 	{
 		a = themap.lower_bound(i);
@@ -102,6 +103,21 @@ int main()
 		}
 	}
 
+	cout << "Test find" << endl;
+	for (int i = 0; i < 20; ++i)
+	{
+		a = themap.find(i);
+		b = ompssmap.find(i);
+
+		if (a == themap.end()) {
+			cout << i << ": After end? " ;
+			assert(b == ompssmap.end());
+			cout << "OK!" << endl;
+		} else {
+			cout << i << " " << *a << " =? " << *b << endl;
+			assert(*a == *b);
+		}
+	}
 
 	return 0;
 }

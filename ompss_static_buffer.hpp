@@ -122,19 +122,13 @@ public:
 		_max_elements = n;
 	}
 
-	template<typename Tarray>
-	void copy(const Tarray &in)
-	{
-		if (_buffer == nullptr)
-			reserve(in.size() + 10); // TODO: This 10 is arbitrary
-		else if (in.size() > _max_elements)
-			throw std::out_of_range("Static buffer");
-
-		for (auto const &a :in)
-			push_back(a);
-	}
-
 	// Constructor
+	omp_static_buffer(const _Alloc &__a = _Alloc()):
+		_elements(0), _max_elements(0),
+		_alloc(__a), _buffer(nullptr)
+	{}
+
+	template<typename Tarray>
 	omp_static_buffer(const _Alloc &__a = _Alloc()):
 		_elements(0), _max_elements(0),
 		_alloc(__a), _buffer(nullptr)
@@ -149,7 +143,24 @@ public:
 		copy(in);
 	}
 
-	// Destructor
+	template<typename Tarray>
+	void copy(const Tarray &in)
+	{
+		const std::size_t in_size = in.size();
+
+		assert(_buffer == nullptr || max_size() >= in.size());
+
+		if (_buffer == nullptr)
+			reserve(in_size + 10); // TODO: this 10 is totally arbitrary now
+		else if (max_size() >= in.size())
+			clear();
+		else
+			throw std::out_of_range("Static buffer");
+
+		for (auto const &a :in)
+			push_back(a);
+	}
+
 	~omp_static_buffer()
 	{
 		assert(_buffer != nullptr);
@@ -159,15 +170,25 @@ public:
 
 	}
 
-	_Val *begin() const { return &_buffer[0]; }
+	const _Val *begin() const { return &_buffer[0]; }
 	_Val *begin() { return &_buffer[0]; }
 
-	_Val *end() const { return &_buffer[_elements]; }
+	const _Val *end() const { return &_buffer[_elements]; }
 	_Val *end() { return &_buffer[_elements]; }
 
-	_Val *data() const { return _buffer; }
+	const _Val *data() const { return _buffer; }
+	_Val *data() { return _buffer; }
 
 	bool empty() const { return (_elements == 0); }
+
+	_Val *find(const _Key &key)
+	{
+		_Val *tmp = lower_bound(key, begin(), end());
+
+		if (KeyOfIterator(tmp) == key)
+			return tmp;
+		return end();
+	}
 
 	std::size_t size() const { return _elements; }
 	std::size_t max_size() const { return _max_elements; }
