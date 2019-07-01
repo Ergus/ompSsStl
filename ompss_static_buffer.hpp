@@ -40,7 +40,7 @@ public:
 	// The key must be always the first element and of type _Key
 	_Key KeyOfIterator(const _Val *it) const
 	{
-		return _Key()(*it);
+		return *(_Key*)(it);
 	}
 
 	_Key &KeyOfIterator(_Val * const it)
@@ -48,10 +48,10 @@ public:
 		return *(_Key*)it;
 	}
 
-// This function returns the index position for key k if the key
-// is not in the array returns false, but sets index position for
-// the closest higher value to k.
-	iterator lower_bound(const _Key &k, const _Val *begin, const _Val *end)
+	// This function returns the index position for key k if the key
+	// is not in the array returns false, but sets index position for
+	// the closest higher value to k.
+	iterator lower_bound(const _Key &k, const _Val *begin, const _Val *end) const
 	{
 		size_t _min = 0, _max = end - begin;
 
@@ -116,7 +116,9 @@ public:
 	void reserve(std::size_t n)
 	{
 		// Reallocation is not supported. So only empty buffers can be reserved
-		assert(_buffer == nullptr && _elements == 0 && _max_elements == 0);
+		assert(_buffer == nullptr);
+		assert(_elements == 0);
+		assert(_max_elements == 0);
 
 		_buffer = _alloc.allocate(n);
 		_max_elements = n;
@@ -180,6 +182,15 @@ public:
 	_Val *data() { return _buffer; }
 
 	bool empty() const { return (_elements == 0); }
+
+	const _Val *find(const _Key &key) const
+	{
+		_Val *tmp = lower_bound(key, begin(), end());
+
+		if (KeyOfIterator(tmp) == key)
+			return tmp;
+		return end();
+	}
 
 	_Val *find(const _Key &key)
 	{

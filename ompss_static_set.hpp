@@ -71,7 +71,7 @@ public:
 	const_iterator begin() const { return _buffer.begin(); }
 
 	iterator end() { return _buffer.end(); }
-	const_iterator end() const { return &_buffer.end(); }
+	const_iterator end() const { return _buffer.end(); }
 
 	value_type *data() { return _buffer; }
 
