@@ -4,10 +4,6 @@ language: cpp
 
 install: make
 
-compiler:
-  - clang
-  - gcc
-
 matrix:
   include:
     # works on Trusty
@@ -59,5 +55,5 @@ before_install:
     - eval "${MATRIX_EVAL}"
 
 script:
-    make
-    make test
+    - make
+    - make test

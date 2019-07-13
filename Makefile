@@ -19,7 +19,7 @@ FILES_OUT := $(FILES_IN:.cpp=.x)
 HEADERS_HPP := $(wildcard *.hpp)
 
 CXXFLAGS := ${CXXFLAGS}
-CXXFLAGS += -g -ggdb -Wall -Wextra -pedantic
+CXXFLAGS += -g -ggdb -Wall -Wextra -pedantic -std=c++11
 
 all : $(FILES_OUT)
 
