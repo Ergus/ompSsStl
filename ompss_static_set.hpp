@@ -25,7 +25,7 @@
 #include "ompss_static_buffer.hpp"
 
 /*
- *  This is the simplest implementation for a fix sized map with
+ *  This is the simplest implementation for a fix sized set with
  *  templates, keeping the log complexity to search and compatible with
  *  ompss without using allocation hacks.
  */
