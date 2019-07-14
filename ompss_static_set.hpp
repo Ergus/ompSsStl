@@ -58,7 +58,7 @@ public:
 	std::pair
 	<iterator, bool> insert(const key_type &k)
 	{
-		iterator it = _buffer.lower_bound(k, _buffer.begin(), _buffer.end());
+		iterator it = _buffer.lower_bound(k);
 
 		const bool insert = (*it != k);
 		if (insert)
@@ -103,7 +103,7 @@ public:
 
 	iterator lower_bound(const key_type &k)
 	{
-		return _buffer.lower_bound(k, _buffer.begin(), _buffer.end());
+		return _buffer.lower_bound(k);
 	}
 
 private:

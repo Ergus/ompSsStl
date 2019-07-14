@@ -43,42 +43,21 @@ public:
 		return *(_Key*)(it);
 	}
 
-	_Key &KeyOfIterator(_Val * const it)
+	_Key &KeyOfIterator(const _Val * it)
 	{
-		return *(_Key*)it;
+		return *(_Key*)(it);
 	}
 
 	// This function returns the index position for key k if the key
 	// is not in the array returns false, but sets index position for
 	// the closest higher value to k.
-	iterator lower_bound(const _Key &k, const _Val *begin, const _Val *end) const
+	iterator lower_bound(const _Key &k)
 	{
-		size_t _min = 0, _max = end - begin;
-
-		iterator it = (_Val*) begin;
-		_Key _it_key = KeyOfIterator(it);
-
-		if (k < _it_key)
-			return it;
-
-		while (_min < _max) {
-			const size_t i = (_min + _max) / 2;
-			it = (_Val*) &begin[i];
-			_it_key = KeyOfIterator(it);
-
-			if (k == _it_key)
-				return it;
-
-			if (k > _it_key)
-				_min = i + 1;
-			else
-				_max = i;
-		}
-
-		if (k > _it_key)
-			++it;
-
-		return it;
+		return std::lower_bound(begin(), end(), k,
+		                        [&](const _Val &a, const _Key &b) -> bool
+					{
+						return  KeyOfIterator(&a) < b;
+					});
 	}
 
 	_Val &insert(_Val * const place, _Key keyvalue)
@@ -185,7 +164,7 @@ public:
 
 	const _Val *find(const _Key &key) const
 	{
-		_Val *tmp = lower_bound(key, begin(), end());
+		_Val *tmp = lower_bound(key);
 
 		if (KeyOfIterator(tmp) == key)
 			return tmp;
@@ -194,7 +173,7 @@ public:
 
 	_Val *find(const _Key &key)
 	{
-		_Val *tmp = lower_bound(key, begin(), end());
+		_Val *tmp = lower_bound(key);
 
 		if (KeyOfIterator(tmp) == key)
 			return tmp;

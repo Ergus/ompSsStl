@@ -60,7 +60,7 @@ public:
 
 	mapped_type &operator[] (const key_type &k)
 	{
-		iterator it = _buffer.lower_bound(k, begin(), end());
+		iterator it = _buffer.lower_bound(k);
 
 		if (it->first != k)
 			_buffer.insert(it, k).second = mapped_type();
@@ -99,12 +99,12 @@ public:
 	// Lower bound
 	const_iterator lower_bound(const key_type &k) const
 	{
-		return _buffer.lower_bound(k, _buffer.begin(), _buffer.end());
+		return _buffer.lower_bound(k);
 	}
 
 	iterator lower_bound(const key_type &k)
 	{
-		return _buffer.lower_bound(k, _buffer.begin(), _buffer.end());
+		return _buffer.lower_bound(k);
 	}
 
 private:
