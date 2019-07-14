@@ -162,22 +162,16 @@ public:
 
 	bool empty() const { return (_elements == 0); }
 
-	const _Val *find(const _Key &key) const
+	_Val *find(const _Key &key) const
 	{
 		_Val *tmp = lower_bound(key);
-
-		if (KeyOfIterator(tmp) == key)
-			return tmp;
-		return end();
+		return KeyOfIterator(tmp) == key ? tmp : end();
 	}
 
 	_Val *find(const _Key &key)
 	{
 		_Val *tmp = lower_bound(key);
-
-		if (KeyOfIterator(tmp) == key)
-			return tmp;
-		return end();
+		return KeyOfIterator(tmp) == key ? tmp : end();
 	}
 
 	std::size_t size() const { return _elements; }
