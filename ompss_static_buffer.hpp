@@ -33,9 +33,11 @@ public:
 	typedef  _Val *iterator;
 	typedef  const _Val *const_iterator;
 
-	typedef typename __gnu_cxx::__alloc_traits<_Alloc>::template
-	rebind<_Val>::other _Tp_alloc_type;
+	// typedef typename __gnu_cxx::__alloc_traits<_Alloc>::template
+	// rebind<_Val>::other _Tp_alloc_type;
 
+	typedef typename std::allocator_traits<_Alloc>::template
+	rebind_alloc<_Val> _Tp_alloc_type;
 
 	// The key must be always the first element and of type _Key
 	_Key KeyOfIterator(const _Val *it) const
